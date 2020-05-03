@@ -1,0 +1,30 @@
+{
+  "name": "users-service",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "gulp --gulpfile app/gulpfile.js",
+    "test": "./node_modules/mocha/bin/_mocha 'app/tests/**/*.test.js'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.9",
+    "morgan": "^1.9.1",
+    "pg": "^7.18.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2",
+    "mocha": "^7.0.1",
+    "nodemon": "^2.0.2"
+  }
+}

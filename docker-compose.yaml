@@ -1,0 +1,119 @@
+version: '3'
+services: 
+    rabbitmq-service:
+        image: rabbitmq:3-management
+        container_name: rabbitmq-service
+        ports:
+            - 5672:5672
+            - 15672:15672
+        healthcheck:
+            test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+            interval: 5s
+            timeout: 15s
+            retries: 1
+    rooms-db:
+        container_name: rooms-db
+        build:
+            context: ./services/rooms/src/db
+        ports: 
+            - "5433:5432" # HOST:CONTAINER
+        environment: 
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        healthcheck:
+            test: exit 0
+    users-db:
+        container_name: users-db
+        build: 
+            context: ./services/users/src/db
+        ports: 
+            - "5434:5432" # HOST:CONTAINER
+        environment: 
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        healthcheck:
+            test: exit 0
+    bookings-db:
+        container_name: bookings-db
+        build:
+            context: ./services/bookings/src/db
+        ports: 
+            - "5435:5432" # HOST:CONTAINER
+        environment: 
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        healthcheck:
+            test: exit 0
+    rooms-service:
+        container_name: rooms-service
+        build: 
+            context: ./services/rooms
+        volumes: 
+            - './services/rooms:/usr/src/app'
+            - './services/rooms/package.json:/usr/src/package.json'
+        ports: 
+            - '3000:3000'
+        environment:
+            - DATABASE_URL=postgres://postgres:postgres@rooms-db:5432/rooms_dev
+            - DATABASE_TEST_URL=postgres://postgres:postgres@rooms-db:5432/rooms_test
+            - NODE_ENV=${NODE_ENV}
+        depends_on:
+            - rooms-db
+        links:
+            - rooms-db
+    users-service:
+        container_name: users-service
+        build:
+            context: ./services/users
+        volumes:
+            - './services/users:/usr/src/app'
+            - './services/users/package.json:/usr/src/package.json'
+        ports: 
+            - '3001:3000'
+        environment: 
+            - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+            - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+            - NODE_ENV=${NODE_ENV}
+        depends_on: 
+            - users-db
+        links:
+            - users-db
+    bookings-service:
+        container_name: bookings-service
+        build:
+            context: ./services/bookings
+        volumes: 
+            - './services/bookings:/usr/src/app'
+            - './services/bookings/package.json:/usr/src/package.json'
+        ports: 
+            - '3002:3000'
+        environment: 
+            - DATABASE_URL=postgres://postgres:postgres@bookings-db:5432/bookings_dev
+            - DATABASE_TEST_URL=postgres://postgres:postgres@bookings-db:5432/bookings_test
+            - NODE_ENV=${NODE_ENV}
+        depends_on: 
+            - bookings-db
+        links:
+            - bookings-db
+    email-service:
+        container_name: email-service
+        build:
+            context: ./services/email
+        volumes: 
+            - './services/email:/usr/src/app'
+            - './services/email/package.json:/usr/src/package.json'
+        ports: 
+            - '3003:3000'
+        environment: 
+            - NODE_ENV=${NODE_ENV}
+    gateway-service:
+        container_name: gateway-service
+        build: 
+            context: ./services/gateway
+        ports: 
+            - '8080:8080'
+            - '9876:9876'
+        volumes: 
+            - ./services/gateway/config/system.config.yml:/usr/src/app/config/system.config.yml
+            - ./services/gateway/config/gateway.config.yml:/usr/src/app/config/gateway.config.yml
+        

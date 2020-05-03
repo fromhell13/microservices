@@ -1,0 +1,2 @@
+CREATE DATABASE rooms_dev;
+CREATE DATABASE rooms_test;

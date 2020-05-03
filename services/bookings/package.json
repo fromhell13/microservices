@@ -1,0 +1,26 @@
+{
+  "name": "bookings-service",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "gulp --gulpfile app/gulpfile.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.9",
+    "morgan": "^1.9.1",
+    "pg": "^7.18.1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2",
+    "nodemon": "^2.0.2"
+  }
+}

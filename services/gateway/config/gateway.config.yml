@@ -1,0 +1,80 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: gateway-service
+apiEndpoints:
+  api:
+    host: localhost
+    paths: '/ip'
+  public:
+    host: localhost
+    paths: '/api/rooms/*'
+  users:
+    host: localhost
+    path: '/api/users/*'
+    scopes:
+      - 'admin'
+  bookings:
+    host: localhost
+    path: '/api/bookings/*'
+    scopes:
+      - 'admin'
+serviceEndpoints:
+  httpbin:
+    url: 'https://httpbin.org'
+  publicsrv:
+    url: 'http://rooms-service:3000'
+  usersrv:
+    url: 'http://users-service:3000'
+  booksrv:
+    url: 'http://bookings-service:3000'
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+pipelines:
+  default:
+    apiEndpoints:
+      - api
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin 
+              changeOrigin: true
+  default-1:
+    apiEndpoints:
+      - public
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: publicsrv 
+              changeOrigin: true
+  default-2:
+    apiEndpoints:
+      - users
+    policies:
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: usersrv 
+              changeOrigin: true
+  default-3:
+    apiEndpoints:
+      - bookings
+    policies:
+    # - key-auth:
+      - proxy:
+        - action:
+            serviceEndpoint: booksrv
+            changeOrigin: true
